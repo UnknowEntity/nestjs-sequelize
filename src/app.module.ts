@@ -1,15 +1,18 @@
 import * as Joi from 'joi';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseConfig } from './interfaces/databaseConfig.interface';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './routes/users/users.module';
 import configuration from './config/configuration';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TestsModule } from './routes/testsFunction/tests.module';
+import { BullModule } from '@nestjs/bull';
 
-const DatabaseModule = TypeOrmModule.forRootAsync({
+const DatabaseModule = SequelizeModule.forRootAsync({
   imports: [ConfigModule],
   useFactory: (configService: ConfigService) => {
     const dbConfig: DatabaseConfig = configService.get<DatabaseConfig>(
@@ -19,14 +22,18 @@ const DatabaseModule = TypeOrmModule.forRootAsync({
       },
     );
     return {
-      type: 'mysql',
+      dialect: 'mysql',
       host: dbConfig.host,
       port: dbConfig.port,
       username: dbConfig.username,
       password: dbConfig.password,
       database: dbConfig.database,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      models: [],
+      autoLoadModels: true,
       synchronize: true,
+      define: {
+        timestamps: false,
+      },
     };
   },
   inject: [ConfigService],
@@ -35,8 +42,16 @@ const DatabaseModule = TypeOrmModule.forRootAsync({
 @Module({
   imports: [
     UsersModule,
+    TestsModule,
     DatabaseModule,
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     ConfigModule.forRoot({
       load: [configuration],
       validationSchema: Joi.object({

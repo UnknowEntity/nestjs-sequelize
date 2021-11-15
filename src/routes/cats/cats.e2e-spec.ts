@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
-import { CatsModule } from '../../src/cats/cats.module';
-import { CatsService } from '../../src/cats/cats.service';
+import { CatsModule } from './cats.module';
+import { CatsService } from './cats.service';
 import { INestApplication } from '@nestjs/common';
 //import { Cat } from './interfaces/cat.interface';
 

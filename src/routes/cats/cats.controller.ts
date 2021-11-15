@@ -17,7 +17,7 @@ import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 import { ErrorsInterceptor } from 'src/interceptors/errors.interceptor';
-import { CacheInterceptor } from '../interceptors/cached.interceptor';
+import { CacheInterceptor } from '../../interceptors/cached.interceptor';
 import { TimeoutInterceptor } from 'src/interceptors/timeout.interceptor';
 import { GetRequestUser } from 'src/decorators/user.decorator';
 
